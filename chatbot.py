@@ -24,7 +24,7 @@ base_url="http://localhost:11434"
 
 #system message template
 
-system_message-SystemMessagePromptTemplate.from_template("You are a helpful Alu assistant. You give responses in only 100 words. You provide responses according to the context only.")
+system_message=SystemMessagePromptTemplate.from_template("You are a helpful Alu assistant. You give responses in only 100 words. You provide responses according to the context only.")
 
 #Chat histroy using session state
 
