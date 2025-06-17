@@ -62,7 +62,7 @@ def get_history():
 
     chat_history.append(prompt)
 
-    ai_message=AIMessagePromptTemplate from_template(chat['assistant'])
+    ai_message=AIMessagePromptTemplate.from_template(chat['assistant'])
 
     chat_history.append(ai_message)
 
