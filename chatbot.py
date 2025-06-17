@@ -2,7 +2,7 @@ import streamlit as st
 
 from langchain_ollama import ChatOllama
 
-from langchain_core.output_parsers import StroutputParser
+from langchain_core.output_parsers import StrOutputParser
 
 from langchain_core.prompts import SystemMessagePromptTemplate
 
@@ -21,6 +21,7 @@ model-Chat0llama(
 model="llama3.2:1b",
 
 base_url="http://localhost:11434"
+
 )
 
 #system message template
@@ -31,7 +32,7 @@ system_message-SystemMessagePromptTemplate.from_template("You are a helpful Alu 
 
 if "chat_history" not in st.session_state:
 
-st.session_state ["chat_history"]=[]
+   st.session_state ["chat_history"]=[]
 
 text-st.chat_input("Type Here....")
 
@@ -39,13 +40,13 @@ text-st.chat_input("Type Here....")
 
 def generate_response (chat_history):
 
-chat_template-ChatPromptTemplate.from_messages(chat_history)
+    chat_template-ChatPromptTemplate.from_messages(chat_history)
 
-chain-chat_template model StrOutputParser()
+    chain-chat_template model StrOutputParser()
 
-response-chain.invoke({})
+    response-chain.invoke({})
 
-return response
+    return response
 
 #function to get chat history user message in 'user' key
 
@@ -53,19 +54,19 @@ return response
 
 def get_history():
 
-chat_history=[system_message]
+  chat_history=[system_message]
 
-for chat in st. session state["chat_history"]:
+  for chat in st. session state["chat_history"]:
 
-prompt-HumanMessagePromptTemplate.from_template(chat['user'])
+    prompt-HumanMessagePromptTemplate.from_template(chat['user'])
 
-chat_history.append(prompt)
+    chat_history.append(prompt)
 
-ai_message-AIMessagePromptTemplate from_template(chat['assistant'])
+    ai_message-AIMessagePromptTemplate from_template(chat['assistant'])
 
-chat_history.append(ai_message)
+    chat_history.append(ai_message)
 
-return chat history
+  return chat history
 
 #Human Message
 
@@ -73,38 +74,36 @@ return chat history
 
 if text:
 
-with at spinner ("Thinking...."):
+    with at spinner ("Thinking...."):
 
-prompt-HumanMessagePromptTemplate.from_template(text)
+      prompt-HumanMessagePromptTemplate.from_template(text)
 
-chat_history=get_history()
+      chat_history=get_history()
 
-chat_history.append(prompt)
+      chat_history.append(prompt)
 
-response-generate_response (chat_history)
+      response-generate_response (chat_history)
 
-st.session_state["chat_history"].append({'user': text, 'assistant':
+      st.session_state["chat_history"].append({'user': text, 'assistant':
 
-response})
+ response))
 
 with st sidebar:
 
-st.title("DashBoard")
+  st.title("DashBoard")
 
-st.write("Chat about anything with your Al friendly Assistant")
-st.markdown("---")
+  st.write("Chat about anything with your Al friendly Assistant")
+  st.markdown("---")
 
-st.subheader(" Conversation History")
+  st.subheader(" Conversation History")
 
 #Display all user questions in the sidebar
 
 if st.session_state ["chat_history"]:
 
-for i, chat in enumerate (reversed(st.session_state["chat_history"])):
+  for i, chat in enumerate (reversed(st.session_state["chat_history"])):
 
-st.markdown (f"(len(st.session_state['chat_history']) 1
-
-(chat['user']}")
+    st.markdown (f"**{len(st.session_state['chat_history']) - i}. ** {chat['user']}")
 
 else:
 
@@ -112,7 +111,7 @@ st.write("No messages yet.")
 
 #Add some CSS for alignment
 
-st.markdown("
+st.markdown("""
 
 <style>
 
