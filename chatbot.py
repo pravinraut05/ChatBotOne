@@ -6,7 +6,7 @@ st.set_page_config(page_title="chatbot", layout="wide")
 st.title("ChatBot: AI Assistant")
 
 # Initialize the model using Hugging Face Transformers
-@st.cache_resource
+@st.cache(allow_output_mutation=True)
 def load_model():
     try:
         # Use a smaller model that works well on free tier
