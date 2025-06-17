@@ -56,7 +56,7 @@ def get_history():
 
   chat_history=[system_message]
 
-  for chat in st. session state["chat_history"]:
+  for chat in st. session_state["chat_history"]:
 
     prompt-HumanMessagePromptTemplate.from_template(chat['user'])
 
