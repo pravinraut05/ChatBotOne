@@ -42,7 +42,7 @@ def generate_response (chat_history):
 
     chat_template-ChatPromptTemplate.from_messages(chat_history)
 
-    chain-chat_template model StrOutputParser()
+    chain-chat_template |model| StrOutputParser()
 
     response-chain.invoke({})
 
