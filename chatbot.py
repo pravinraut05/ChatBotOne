@@ -74,7 +74,7 @@ def get_history():
 
 if text:
 
-    with at spinner ("Thinking...."):
+    with st.spinner ("Thinking...."):
 
       prompt-HumanMessagePromptTemplate.from_template(text)
 
