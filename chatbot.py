@@ -74,15 +74,15 @@ if text:
 
     with st.spinner ("Thinking...."):
 
-      prompt=HumanMessagePromptTemplate.from_template(text)
+        prompt=HumanMessagePromptTemplate.from_template(text)
 
-      chat_history=get_history()
+        chat_history=get_history()
 
-      chat_history.append(prompt)
+        chat_history.append(prompt)
 
-      response-generate_response (chat_history)
+        response-generate_response (chat_history)
 
-      st.session_state["chat_history"].append({'user': text, 'assistant':
+        st.session_state["chat_history"].append({'user': text, 'assistant':
 
  response})
 
