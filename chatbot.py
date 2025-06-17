@@ -74,7 +74,7 @@ if text:
 
     with st.spinner ("Thinking...."):
 
-      prompt-HumanMessagePromptTemplate.from_template(text)
+      prompt=HumanMessagePromptTemplate.from_template(text)
 
       chat_history=get_history()
 
