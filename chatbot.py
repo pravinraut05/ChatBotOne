@@ -1,27 +1,9 @@
 import streamlit as st
-from transformers import pipeline
-import torch
+import requests
+import json
 
 st.set_page_config(page_title="chatbot", layout="wide")
 st.title("ChatBot: AI Assistant")
-
-# Initialize the model using Hugging Face Transformers
-@st.cache(allow_output_mutation=True)
-def load_model():
-    try:
-        # Use a smaller model that works well on free tier
-        model = pipeline(
-            "text-generation",
-            model="microsoft/DialoGPT-medium",
-            tokenizer="microsoft/DialoGPT-medium",
-            device=-1  # Use CPU
-        )
-        return model
-    except Exception as e:
-        st.error(f"Error loading model: {str(e)}")
-        return None
-
-model = load_model()
 
 # Chat history using session state
 if "chat_history" not in st.session_state:
@@ -29,37 +11,37 @@ if "chat_history" not in st.session_state:
 
 text = st.chat_input("Type Here....")
 
-# Function to generate responses
+# Simple response function (you can replace this with any AI service)
 def generate_response(user_input):
-    if model is None:
-        return "Sorry, the model is not available right now."
+    # For now, let's create a simple rule-based response
+    # You can replace this with any AI API call
     
-    try:
-        # Create a simple prompt
-        prompt = f"Human: {user_input}\nAssistant:"
-        
-        # Generate response
-        response = model(
-            prompt,
-            max_length=len(prompt.split()) + 50,
-            num_return_sequences=1,
-            temperature=0.7,
-            do_sample=True,
-            pad_token_id=model.tokenizer.eos_token_id
-        )
-        
-        # Extract the generated text
-        generated_text = response[0]['generated_text']
-        assistant_response = generated_text.split("Assistant:")[-1].strip()
-        
-        # Limit response to 100 words
-        words = assistant_response.split()
-        if len(words) > 100:
-            assistant_response = " ".join(words[:100]) + "..."
-            
-        return assistant_response
-    except Exception as e:
-        return f"Sorry, I encountered an error: {str(e)}"
+    user_input_lower = user_input.lower()
+    
+    if "hello" in user_input_lower or "hi" in user_input_lower:
+        return "Hello! How can I help you today?"
+    elif "how are you" in user_input_lower:
+        return "I'm doing great! Thanks for asking. How are you?"
+    elif "what is your name" in user_input_lower:
+        return "I'm your AI assistant chatbot. You can ask me anything!"
+    elif "bye" in user_input_lower or "goodbye" in user_input_lower:
+        return "Goodbye! Have a great day!"
+    elif "help" in user_input_lower:
+        return "I'm here to help! You can ask me questions, have a conversation, or just chat about anything."
+    elif "weather" in user_input_lower:
+        return "I don't have access to real-time weather data, but you can check your local weather service for current conditions."
+    elif "time" in user_input_lower:
+        return "I don't have access to real-time clock, but you can check the time on your device."
+    else:
+        responses = [
+            f"That's interesting! Tell me more about {user_input}.",
+            f"I understand you're asking about {user_input}. Can you provide more details?",
+            f"Thanks for sharing that with me. What would you like to know more about?",
+            f"I'd be happy to help you with {user_input}. What specific aspect interests you?",
+            "That's a great question! While I don't have all the details, I'm here to chat and help however I can."
+        ]
+        import random
+        return random.choice(responses)
 
 # Handle user input
 if text:
@@ -77,14 +59,15 @@ with st.sidebar:
     # Display all user questions in the sidebar
     if st.session_state["chat_history"]:
         for i, chat in enumerate(reversed(st.session_state["chat_history"])):
-            st.markdown(f"**{len(st.session_state['chat_history']) - i}.** {chat['user'][:50]}...")
+            question_preview = chat['user'][:50] + "..." if len(chat['user']) > 50 else chat['user']
+            st.markdown(f"**{len(st.session_state['chat_history']) - i}.** {question_preview}")
     else:
         st.write("No messages yet.")
     
     # Clear chat button
     if st.button("Clear Chat"):
         st.session_state["chat_history"] = []
-        st.rerun()
+        st.experimental_rerun()
 
 # Add some CSS for alignment
 st.markdown("""
@@ -111,12 +94,21 @@ st.markdown("""
     background-color: #F1F1F1;
     border: 1px solid #E0E0E0;
 }
+.chat-container {
+    padding: 20px 0;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # Render messages like a real chat interface
+st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
 for chat in st.session_state['chat_history']:
     # User message on right
     st.markdown(f"<div class='user-message'><strong>You:</strong><br>{chat['user']}</div>", unsafe_allow_html=True)
     # Assistant message on left
     st.markdown(f"<div class='bot-message'><strong>Assistant:</strong><br>{chat['assistant']}</div>", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Footer
+st.markdown("---")
+st.markdown("💬 **Simple AI Chatbot** - Built with Streamlit")
