@@ -66,7 +66,7 @@ def get_history():
 
     chat_history.append(ai_message)
 
-  return chat history
+  return chat_history
 
 #Human Message
 
