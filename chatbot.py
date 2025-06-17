@@ -155,14 +155,14 @@ for chat in st.session_state['chat_history']:
 
 #User on right
 
-st.markdown (f"<div class='user-message'> (chat ['user']}</div>",u
+  st.markdown (f"<div class='user-message'> {chat ['user']}</div>",
 
-unsafe_allow_html=True)
+ unsafe_allow_html=True)
 
 #Assistant on left
 
-st.markdown (f"<div class='bot-message'> <chat['assistant']}</div>",
+  st.markdown (f"<div class='bot-message'> {chat['assistant']}</div>",
 
-unsafe_allow_html=True)
+ unsafe_allow_html=True)
 
-st markdown("-")
+st.markdown("-")
