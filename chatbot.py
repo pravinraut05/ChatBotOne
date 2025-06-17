@@ -86,7 +86,7 @@ if text:
 
       st.session_state["chat_history"].append({'user': text, 'assistant':
 
- response))
+ response})
 
 with st sidebar:
 
