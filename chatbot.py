@@ -1,114 +1,168 @@
 import streamlit as st
-import requests
-import json
+
+from langchain_ollama import ChatOllama
+
+from langchain_core.output_parsers import StrOutputParser
+
+from langchain_core.prompts import SystemMessagePromptTemplate,
+
+HumanMessagePromptTemplate, AIMessagePromptTemplate
+
+from langchain_core.prompts import ChatPromptTemplate
 
 st.set_page_config(page_title="chatbot", layout="wide")
-st.title("ChatBot: AI Assistant")
 
-# Chat history using session state
+st.title("ChatBot: Llama 3.2 on Ollama")
+
+#building the model
+
+model-Chat0llama(
+
+model="llama3.2:1b",
+
+base_url="http://localhost:11434"
+
+)
+
+#system message template
+
+system_message-SystemMessagePromptTemplate.from_template("You are a helpful Alu assistant. You give responses in only 100 words. You provide responses according to the context only.")
+
+#Chat histroy using session state
+
 if "chat_history" not in st.session_state:
-    st.session_state["chat_history"] = []
 
-text = st.chat_input("Type Here....")
+   st.session_state ["chat_history"]=[]
 
-# Simple response function (you can replace this with any AI service)
-def generate_response(user_input):
-    # For now, let's create a simple rule-based response
-    # You can replace this with any AI API call
-    
-    user_input_lower = user_input.lower()
-    
-    if "hello" in user_input_lower or "hi" in user_input_lower:
-        return "Hello! How can I help you today?"
-    elif "how are you" in user_input_lower:
-        return "I'm doing great! Thanks for asking. How are you?"
-    elif "what is your name" in user_input_lower:
-        return "I'm your AI assistant chatbot. You can ask me anything!"
-    elif "bye" in user_input_lower or "goodbye" in user_input_lower:
-        return "Goodbye! Have a great day!"
-    elif "help" in user_input_lower:
-        return "I'm here to help! You can ask me questions, have a conversation, or just chat about anything."
-    elif "weather" in user_input_lower:
-        return "I don't have access to real-time weather data, but you can check your local weather service for current conditions."
-    elif "time" in user_input_lower:
-        return "I don't have access to real-time clock, but you can check the time on your device."
-    else:
-        responses = [
-            f"That's interesting! Tell me more about {user_input}.",
-            f"I understand you're asking about {user_input}. Can you provide more details?",
-            f"Thanks for sharing that with me. What would you like to know more about?",
-            f"I'd be happy to help you with {user_input}. What specific aspect interests you?",
-            "That's a great question! While I don't have all the details, I'm here to chat and help however I can."
-        ]
-        import random
-        return random.choice(responses)
+text-st.chat_input("Type Here....")
 
-# Handle user input
+#Function to generate responses
+
+def generate_response (chat_history):
+
+    chat_template-ChatPromptTemplate.from_messages(chat_history)
+
+    chain-chat_template |model| StrOutputParser()
+
+    response-chain.invoke({})
+
+    return response
+
+#function to get chat history user message in 'user' key
+
+# and as message in 'assistant key
+
+def get_history():
+
+  chat_history=[system_message]
+
+  for chat in st. session_state["chat_history"]:
+
+    prompt-HumanMessagePromptTemplate.from_template(chat['user'])
+
+    chat_history.append(prompt)
+
+    ai_message=AIMessagePromptTemplate.from_template(chat['assistant'])
+
+    chat_history.append(ai_message)
+
+  return chat_history
+
+#Human Message
+
+#if submit and text:
+
 if text:
-    with st.spinner("Thinking...."):
-        response = generate_response(text)
-        st.session_state["chat_history"].append({'user': text, 'assistant': response})
 
-# Sidebar
+    with st.spinner ("Thinking...."):
+
+      prompt-HumanMessagePromptTemplate.from_template(text)
+
+      chat_history=get_history()
+
+      chat_history.append(prompt)
+
+      response-generate_response (chat_history)
+
+      st.session_state["chat_history"].append({'user': text, 'assistant':
+
+ response})
+
 with st.sidebar:
-    st.title("Dashboard")
-    st.write("Chat about anything with your AI friendly Assistant")
-    st.markdown("---")
-    st.subheader("Conversation History")
-    
-    # Display all user questions in the sidebar
-    if st.session_state["chat_history"]:
-        for i, chat in enumerate(reversed(st.session_state["chat_history"])):
-            question_preview = chat['user'][:50] + "..." if len(chat['user']) > 50 else chat['user']
-            st.markdown(f"**{len(st.session_state['chat_history']) - i}.** {question_preview}")
-    else:
-        st.write("No messages yet.")
-    
-    # Clear chat button
-    if st.button("Clear Chat"):
-        st.session_state["chat_history"] = []
-        st.experimental_rerun()
 
-# Add some CSS for alignment
+  st.title("DashBoard")
+
+  st.write("Chat about anything with your Al friendly Assistant")
+  st.markdown("---")
+
+  st.subheader(" Conversation History")
+
+#Display all user questions in the sidebar
+
+if st.session_state ["chat_history"]:
+
+  for i, chat in enumerate (reversed(st.session_state["chat_history"])):
+
+    st.markdown (f"**{len(st.session_state['chat_history']) - i}. ** {chat['user']}")
+
+else:
+
+  st.write("No messages yet.")
+
+#Add some CSS for alignment
+
 st.markdown("""
+
 <style>
-.user-message {
-    padding: 15px;
-    border-radius: 15px;
-    max-width: 70%;
-    margin-left: auto;
-    margin-right: 20px;
-    margin-bottom: 10px;
-    text-align: right;
-    background-color: #DCF8C6;
-    border: 1px solid #C1E1C1;
+
 }
-.bot-message {
-    padding: 15px;
-    border-radius: 15px;
-    max-width: 70%;
-    margin-right: auto;
-    margin-left: 10px;
-    margin-bottom: 10px;
-    text-align: left;
-    background-color: #F1F1F1;
-    border: 1px solid #E0E0E0;
-}
-.chat-container {
-    padding: 20px 0;
-}
+
+user-message {
+
+padding: 10px;
+
+border-radius: 10px;
+
+max-width: 70%;
+
+margin-left: auto;
+
+margin-right: 200px;
+
+text-align: right;
+
+bot-message {
+
+padding: 10px;
+
+border-radius: 10px;
+
+max-width: 70%;
+
+margin-right: auto;
+
+margin-left: 10px;
+
+text-align: left;
+
 </style>
+
 """, unsafe_allow_html=True)
 
-# Render messages like a real chat interface
-st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
-for chat in st.session_state['chat_history']:
-    # User message on right
-    st.markdown(f"<div class='user-message'><strong>You:</strong><br>{chat['user']}</div>", unsafe_allow_html=True)
-    # Assistant message on left
-    st.markdown(f"<div class='bot-message'><strong>Assistant:</strong><br>{chat['assistant']}</div>", unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
+#Render messages like a real chat interface
 
-# Footer
-st.markdown("---")
-st.markdown("💬 **Simple AI Chatbot** - Built with Streamlit")
+for chat in st.session_state['chat_history']:
+
+#User on right
+
+  st.markdown (f"<div class='user-message'> {chat ['user']}</div>",
+
+ unsafe_allow_html=True)
+
+#Assistant on left
+
+  st.markdown (f"<div class='bot-message'> {chat['assistant']}</div>",
+
+ unsafe_allow_html=True)
+
+st.markdown("-")
