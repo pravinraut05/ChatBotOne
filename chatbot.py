@@ -88,7 +88,7 @@ if text:
 
  response})
 
-with st sidebar:
+with st.sidebar:
 
   st.title("DashBoard")
 
