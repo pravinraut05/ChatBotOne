@@ -56,7 +56,7 @@ def get_history():
 
   for chat in st. session_state["chat_history"]:
 
-    prompt-HumanMessagePromptTemplate.from_template(chat['user'])
+    prompt=HumanMessagePromptTemplate.from_template(chat['user'])
 
     chat_history.append(prompt)
 
@@ -80,7 +80,7 @@ if text:
 
         chat_history.append(prompt)
 
-        response-generate_response (chat_history)
+        response=generate_response (chat_history)
 
         st.session_state["chat_history"].append({'user': text, 'assistant':
 
