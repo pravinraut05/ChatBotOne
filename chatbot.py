@@ -1,168 +1,122 @@
 import streamlit as st
-
-from langchain_ollama import ChatOllama
-
-from langchain_core.output_parsers import StrOutputParser
-
-from langchain_core.prompts import SystemMessagePromptTemplate,
-
-HumanMessagePromptTemplate, AIMessagePromptTemplate
-
-from langchain_core.prompts import ChatPromptTemplate
+from transformers import pipeline
+import torch
 
 st.set_page_config(page_title="chatbot", layout="wide")
+st.title("ChatBot: AI Assistant")
 
-st.title("ChatBot: Llama 3.2 on Ollama")
+# Initialize the model using Hugging Face Transformers
+@st.cache_resource
+def load_model():
+    try:
+        # Use a smaller model that works well on free tier
+        model = pipeline(
+            "text-generation",
+            model="microsoft/DialoGPT-medium",
+            tokenizer="microsoft/DialoGPT-medium",
+            device=-1  # Use CPU
+        )
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {str(e)}")
+        return None
 
-#building the model
+model = load_model()
 
-model-Chat0llama(
-
-model="llama3.2:1b",
-
-base_url="http://localhost:11434"
-
-)
-
-#system message template
-
-system_message-SystemMessagePromptTemplate.from_template("You are a helpful Alu assistant. You give responses in only 100 words. You provide responses according to the context only.")
-
-#Chat histroy using session state
-
+# Chat history using session state
 if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = []
 
-   st.session_state ["chat_history"]=[]
+text = st.chat_input("Type Here....")
 
-text-st.chat_input("Type Here....")
+# Function to generate responses
+def generate_response(user_input):
+    if model is None:
+        return "Sorry, the model is not available right now."
+    
+    try:
+        # Create a simple prompt
+        prompt = f"Human: {user_input}\nAssistant:"
+        
+        # Generate response
+        response = model(
+            prompt,
+            max_length=len(prompt.split()) + 50,
+            num_return_sequences=1,
+            temperature=0.7,
+            do_sample=True,
+            pad_token_id=model.tokenizer.eos_token_id
+        )
+        
+        # Extract the generated text
+        generated_text = response[0]['generated_text']
+        assistant_response = generated_text.split("Assistant:")[-1].strip()
+        
+        # Limit response to 100 words
+        words = assistant_response.split()
+        if len(words) > 100:
+            assistant_response = " ".join(words[:100]) + "..."
+            
+        return assistant_response
+    except Exception as e:
+        return f"Sorry, I encountered an error: {str(e)}"
 
-#Function to generate responses
-
-def generate_response (chat_history):
-
-    chat_template-ChatPromptTemplate.from_messages(chat_history)
-
-    chain-chat_template |model| StrOutputParser()
-
-    response-chain.invoke({})
-
-    return response
-
-#function to get chat history user message in 'user' key
-
-# and as message in 'assistant key
-
-def get_history():
-
-  chat_history=[system_message]
-
-  for chat in st. session_state["chat_history"]:
-
-    prompt-HumanMessagePromptTemplate.from_template(chat['user'])
-
-    chat_history.append(prompt)
-
-    ai_message=AIMessagePromptTemplate.from_template(chat['assistant'])
-
-    chat_history.append(ai_message)
-
-  return chat_history
-
-#Human Message
-
-#if submit and text:
-
+# Handle user input
 if text:
+    with st.spinner("Thinking...."):
+        response = generate_response(text)
+        st.session_state["chat_history"].append({'user': text, 'assistant': response})
 
-    with st.spinner ("Thinking...."):
-
-      prompt-HumanMessagePromptTemplate.from_template(text)
-
-      chat_history=get_history()
-
-      chat_history.append(prompt)
-
-      response-generate_response (chat_history)
-
-      st.session_state["chat_history"].append({'user': text, 'assistant':
-
- response})
-
+# Sidebar
 with st.sidebar:
+    st.title("Dashboard")
+    st.write("Chat about anything with your AI friendly Assistant")
+    st.markdown("---")
+    st.subheader("Conversation History")
+    
+    # Display all user questions in the sidebar
+    if st.session_state["chat_history"]:
+        for i, chat in enumerate(reversed(st.session_state["chat_history"])):
+            st.markdown(f"**{len(st.session_state['chat_history']) - i}.** {chat['user'][:50]}...")
+    else:
+        st.write("No messages yet.")
+    
+    # Clear chat button
+    if st.button("Clear Chat"):
+        st.session_state["chat_history"] = []
+        st.rerun()
 
-  st.title("DashBoard")
-
-  st.write("Chat about anything with your Al friendly Assistant")
-  st.markdown("---")
-
-  st.subheader(" Conversation History")
-
-#Display all user questions in the sidebar
-
-if st.session_state ["chat_history"]:
-
-  for i, chat in enumerate (reversed(st.session_state["chat_history"])):
-
-    st.markdown (f"**{len(st.session_state['chat_history']) - i}. ** {chat['user']}")
-
-else:
-
-  st.write("No messages yet.")
-
-#Add some CSS for alignment
-
+# Add some CSS for alignment
 st.markdown("""
-
 <style>
-
+.user-message {
+    padding: 15px;
+    border-radius: 15px;
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    text-align: right;
+    background-color: #DCF8C6;
+    border: 1px solid #C1E1C1;
 }
-
-user-message {
-
-padding: 10px;
-
-border-radius: 10px;
-
-max-width: 70%;
-
-margin-left: auto;
-
-margin-right: 200px;
-
-text-align: right;
-
-bot-message {
-
-padding: 10px;
-
-border-radius: 10px;
-
-max-width: 70%;
-
-margin-right: auto;
-
-margin-left: 10px;
-
-text-align: left;
-
+.bot-message {
+    padding: 15px;
+    border-radius: 15px;
+    max-width: 70%;
+    margin-right: auto;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    text-align: left;
+    background-color: #F1F1F1;
+    border: 1px solid #E0E0E0;
+}
 </style>
-
 """, unsafe_allow_html=True)
 
-#Render messages like a real chat interface
-
+# Render messages like a real chat interface
 for chat in st.session_state['chat_history']:
-
-#User on right
-
-  st.markdown (f"<div class='user-message'> {chat ['user']}</div>",
-
- unsafe_allow_html=True)
-
-#Assistant on left
-
-  st.markdown (f"<div class='bot-message'> {chat['assistant']}</div>",
-
- unsafe_allow_html=True)
-
-st.markdown("-")
+    # User message on right
+    st.markdown(f"<div class='user-message'><strong>You:</strong><br>{chat['user']}</div>", unsafe_allow_html=True)
+    # Assistant message on left
+    st.markdown(f"<div class='bot-message'><strong>Assistant:</strong><br>{chat['assistant']}</div>", unsafe_allow_html=True)
