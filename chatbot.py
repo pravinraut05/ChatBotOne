@@ -14,7 +14,7 @@ st.title("ChatBot: Llama 3.2 on Ollama")
 
 #building the model
 
-model-Chat0llama(
+model=Chat0llama(
 
 model="llama3.2:1b",
 
