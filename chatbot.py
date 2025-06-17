@@ -32,7 +32,7 @@ if "chat_history" not in st.session_state:
 
    st.session_state ["chat_history"]=[]
 
-text-st.chat_input("Type Here....")
+text=st.chat_input("Type Here....")
 
 #Function to generate responses
 
