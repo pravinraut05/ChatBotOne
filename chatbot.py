@@ -4,7 +4,7 @@ from langchain_ollama import ChatOllama
 
 from langchain_core.output_parsers import StrOutputParser
 
-from langchain_core.prompts import SystemMessagePromptTemplate
+from langchain_core.prompts import SystemMessagePromptTemplate,
 
 HumanMessagePromptTemplate, AIMessagePromptTemplate
 
