@@ -107,7 +107,7 @@ if st.session_state ["chat_history"]:
 
 else:
 
-st.write("No messages yet.")
+  st.write("No messages yet.")
 
 #Add some CSS for alignment
 
