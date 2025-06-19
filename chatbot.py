@@ -44,7 +44,7 @@ def generate_response (chat_history):
 
     chain=chat_template |model| StrOutputParser()
 
-    response-chain.invoke({})
+    response=chain.invoke({})
 
     return response
 
