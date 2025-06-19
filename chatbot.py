@@ -40,7 +40,7 @@ text=st.chat_input("Type Here....")
 
 def generate_response (chat_history):
 
-    chat_template-ChatPromptTemplate.from_messages(chat_history)
+    chat_template=ChatPromptTemplate.from_messages(chat_history)
 
     chain-chat_template |model| StrOutputParser()
 
