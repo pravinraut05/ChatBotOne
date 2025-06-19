@@ -82,7 +82,7 @@ if text:
 
         chat_history.append(prompt)
 
-        response=generate_response (chat_history)
+        response=generate_response(chat_history)
 
         st.session_state["chat_history"].append({'user': text, 'assistant':
 
